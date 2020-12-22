@@ -38,7 +38,11 @@ jobs:
       # Runs a set of commands using the runners shell
       - name: Update sysytem
         run: |
-          sudo apt update && sudo apt upgrade -y
+          sudo apt update && sudo apt upgrade -y &&sudo apt -y  install git zip unzip default-jdk brotli python3 sudo cpio p7zip-full aapt zipalign wget curl
+          
+      - name: cloud189 yun
+        run: |
+          git clone https://github.com/Aruelius/cloud189.git
       
       - name: SSH connection to Actions
         uses: P3TERX/debugger-action@main
