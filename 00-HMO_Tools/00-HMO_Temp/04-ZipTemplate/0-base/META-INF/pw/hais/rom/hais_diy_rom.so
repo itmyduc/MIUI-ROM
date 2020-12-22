@@ -1,0 +1,154 @@
+#!/bin/bash
+BASH_PATH=/tmp/Hais/ReplaceFile
+
+#删除多余文件
+busybox rm -rf /system_root/lost+found
+busybox rm -rf /cache/lost+found
+busybox rm -rf /data/lost+found
+busybox rm -rf /data/magisk_backup_*
+busybox rm -rf /mnt/vendor/persist/lost+found
+
+ui_print() {
+	echo -n -e "$1\n"
+}
+
+#替换system所有文件
+repType=system
+for file in `find $BASH_PATH/${repType}_files/* -type f`
+	do
+		tmpPath=${file%/*}									#刷机包中的路径
+		sysfile=${repType}${file##*${repType}_files}	#准备要替换或增加的目标文件
+		sysPath=${sysfile%/*}					#准备要替换或增加的文件
+		ui_print "- 备份并替换 $file"
+		mkdir -p /$sysPath					#创建目标目录 /system/app/Via/
+		cp  $file /$sysfile					#替换文件
+		chmod 644 /$sysfile					#修复权限
+	done
+	
+
+#替换vendor所有文件
+repType=vendor
+for file in `find $BASH_PATH/${repType}_files/* -type f`
+	do
+		tmpPath=${file%/*}									#刷机包中的路径
+		sysfile=${repType}${file##*${repType}_files}	#准备要替换或增加的目标文件
+		sysPath=${sysfile%/*}					#准备要替换或增加的文件
+		ui_print "- 备份并替换 $file"
+		mkdir -p /$sysPath					#创建目标目录 /system/app/Via/
+		cp  $file /$sysfile					#替换文件
+		chmod 644 /$sysfile					#修复权限
+	done
+	
+	
+
+#替换cust所有文件
+repType=cust
+for file in `find $BASH_PATH/${repType}_files/* -type f`
+	do
+		tmpPath=${file%/*}									#刷机包中的路径
+		sysfile=${repType}${file##*${repType}_files}	#准备要替换或增加的目标文件
+		sysPath=${sysfile%/*}					#准备要替换或增加的文件
+		ui_print "- 备份并替换 $file"
+		mkdir -p /$sysPath					#创建目标目录 /system/app/Via/
+		cp  $file /$sysfile					#替换文件
+		chmod 644 /$sysfile					#修复权限
+	done
+	
+
+#替换data所有文件
+repType=data
+for file in `find $BASH_PATH/${repType}_files/* -type f`
+	do
+		tmpPath=${file%/*}									#刷机包中的路径
+		sysfile=${repType}${file##*${repType}_files}	#准备要替换或增加的目标文件
+		sysPath=${sysfile%/*}					#准备要替换或增加的文件
+		ui_print "- 备份并替换 $file"
+		mkdir -p /$sysPath					#创建目标目录 /system/app/Via/
+		cp  $file /$sysfile					#替换文件
+		chmod 644 /$sysfile					#修复权限
+	done
+	
+	
+ui_print "关闭桌面日记"
+home=/data/user_de/0/com.miui.home/cache/debug_log
+busybox chattr -i $home
+rm -rf $home
+mkdir -p $home
+#chmod 000 $home
+#busybox chattr +i $home	#不可读会导致界面不可保存
+
+
+#增加相机内测功能
+touch /sdcard/DCIM/Camera/lab_options_visible
+
+
+AdCreateFiles="
+#小米广告
+/data/media/0/miad
+#去除安全中心广告
+/data/data/com.miui.securitycenter/files/securityscan_homelist_cache
+#去除 咸鱼开屏广告
+/data/media/0/Android/data/com.taobao.idlefish/files/ad
+#去除 网易云广告，不知道哪个有效，一个大写一个小写
+/data/media/0/Android/data/com.netease.cloudmusic/cache/ad
+/data/media/0/Android/data/com.netease.cloudmusic/cache/Ad
+#去除 抖音广告
+/data/media/0/Android/data/com.ss.android.ugc.aweme/splashCache
+/data/media/0/Android/data/com.ss.android.ugc.aweme/awemeSplashCache
+/data/media/0/Android/data/com.ss.android.ugc.aweme/liveSplashCache
+#QQ音乐
+/data/media/0/Android/data/com.tencent.qqmusic/files/cache/splash
+#酷我音乐
+/data/media/0/Android/data/cn.kuwo.player/files/KuwoMusic/.screenad
+#腾讯视频
+/data/data/com.tencent.qqlive/files/ad_cache
+/data/data/com.tencent.qqlive/files/qad_cache
+/data/media/0/Android/data/com.tencent.qqlive/files/SplashPreload
+#美团外卖
+/data/media/0/Android/data/com.sankuai.meituan.takeoutnew/cache
+#UC浏览器
+/data/media/0/Android/data/com.UCMobile/files/UCDownloads
+#QQ浏览器
+/data/data/com.tencent.mtt/app_adnet
+/data/data/com.tencent.mtt/files/data/splash
+#腾讯新闻
+/data/data/com.tencent.news/files/ad_cache
+/data/data/com.tencent.news/files/tad_cache
+/data/media/0/Android/data/com.tencent.news/files/ad
+#迅雷
+/data/media/0/Android/data/com.xunlei.downloadprovider/files/splash
+/data/media/0/Android/data/com.xunlei.downloadprovider/cache/splash_image
+#应用汇
+/data/data/com.yingyonghui.market/cache
+#百度地图
+/data/media/0/Android/data/com.baidu.BaiduMap/BaiduMap/cache/AdvertImageCache
+#全民小说
+/data/media/0/Android/data/com.duokan.free/cache/splash_ad_cache
+/data/media/0/Android/data/com.duokan.free/cache/splash_video_cache*
+"
+
+#精简和删除文件
+for file in $AdCreateFiles ; do
+	echo $file
+	if [ "${file:0:1}" == "/" ];then	#如果 /开头则确定是目录，就进行处理
+		busybox rm -rf $file
+		busybox mkdir -p $(dirname "$file")
+		busybox touch $file
+		busybox chmod 000 $file
+	else
+		ui_print $file
+	fi
+done
+
+
+#调用自定义apk文件
+haisConfig='/sdcard/HaisConfig.sh'
+if [ -e "$haisConfig" ];then 
+	ui_print "启用自定义扩展"
+	rm -rf "/tmp/mHaisExtended.log"
+	busybox sh $haisConfig | tee -a "/tmp/mHaisExtended.log"	#运行扩展脚本
+else
+	ui_print "删除编译数据"
+	busybox rm -rf /data/dalvik-cache
+	busybox rm -rf /data/system/package_cache
+fi
