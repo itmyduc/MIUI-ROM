@@ -45,5 +45,5 @@ jobs:
          git clone https://github.com/Dawnnnnnn/Cloud189.git
       
       - name: SSH connection to Actions
-        uses: P3TERX/debugger-action@main
+        uses: P3TERX/debugger-action@master
         if: env.SSH_ACTIONS == 'true' || contains(github.event.action, 'ssh')
